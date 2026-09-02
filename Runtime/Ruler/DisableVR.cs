@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------
-// disables VR for Scene 0 and enables it for any scene after Scene 0.
+// disables VR for Scene 0 and 1 and enables it for any scene after Scene 1.
 // Attach this script to a GameObject in your initial scene (Scene 0)
 
 // Needed so that startup scene with ruler does not have VR enabled.
@@ -26,8 +26,8 @@ public class DisableVR : MonoBehaviour
 
     private void Start()
     {
-        // disable VR for the initial scene (Scene 0) on startup
-        if (SceneManager.GetActiveScene().buildIndex == 0)
+        // disable VR for scenes 0 and 1 on startup
+        if (SceneManager.GetActiveScene().buildIndex <= 1)
         {
             DisableXR();
         }
@@ -35,16 +35,15 @@ public class DisableVR : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // if loaded scene is still scene 0, ensure VR is disabled
-        if (scene.buildIndex == 0)
+        // if loaded scene is scene 0 or 1, ensure VR is disabled
+        if (scene.buildIndex <= 1)
         {
             DisableXR();
             vrEnabled = false;
         }
-        // if loaded scene is not scene 0, start VR
+        // any scene after scene 1 should have VR enabled
         else
         {
-            // any scene after scene 0 should have VR
             if (!vrEnabled)
             {
                 StartCoroutine(StartXR());

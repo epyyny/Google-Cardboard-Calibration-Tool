@@ -11,7 +11,7 @@ using UnityEngine.InputSystem.Utilities;
 public class DpiScalingToggle : MonoBehaviour
 {
     // Starts ON to match the modified SDK default.
-    private bool _dpiScalingEnabled = true;
+    public static bool DpiScalingEnabled = true;
 
     // Prevents a single tap registering on multiple frames.
     private bool _touchedLastFrame = false;
@@ -22,9 +22,9 @@ public class DpiScalingToggle : MonoBehaviour
 
         if (touchedThisFrame && !_touchedLastFrame)
         {
-            _dpiScalingEnabled = !_dpiScalingEnabled;
-            XRLoader.SetDpiScalingEnabled(_dpiScalingEnabled);
-            Debug.Log($"[DpiScalingToggle] DPI scaling: {(_dpiScalingEnabled ? "ON (modified)" : "OFF (original)")}");
+            DpiScalingEnabled = !DpiScalingEnabled;
+            XRLoader.SetDpiScalingEnabled(DpiScalingEnabled);
+            Debug.Log($"[DpiScalingToggle] DPI scaling: {(DpiScalingEnabled ? "ON (modified)" : "OFF (original)")}");
         }
 
         _touchedLastFrame = touchedThisFrame;

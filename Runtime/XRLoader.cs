@@ -162,15 +162,19 @@ namespace Google.XR.Cardboard
         {
 
             // *** edited to add DPI calculation and passing to native plugin ***
-            int dpiToUse = (int)DPICalculator.CalculatedDPI;
+            //int dpiToUse = (int)DPICalculator.CalculatedDPI;
+            int xdpi = (int)DPICalculator.CalculatedXDPI;
+            int ydpi = (int)DPICalculator.CalculatedYDPI;
 
-            if (dpiToUse <= 0)
+
+            if (xdpi <= 0 || ydpi <= 0)
             {
-                dpiToUse = (int)Screen.dpi; // fallback
+                xdpi = (int)Screen.dpi;
+                ydpi = (int)Screen.dpi;
             }
              CardboardUnity_setScreenParams(
                     (int)Screen.width, (int)Screen.height, (int)renderingArea.x,
-                    (int)renderingArea.y, (int)renderingArea.width, (int)renderingArea.height, (int)dpiToUse); 
+                    (int)renderingArea.y, (int)renderingArea.width, (int)renderingArea.height, xdpi, ydpi); // pass X-DPI and Y-DPI to native plugin
 
             // *** end of edit ***
 
@@ -263,7 +267,7 @@ namespace Google.XR.Cardboard
         [DllImport(ApiConstants.CardboardApi)]
         private static extern void CardboardUnity_setScreenParams(
             int screen_width, int screen_height, int viewport_x, int viewport_y, int viewport_width,
-            int viewport_height, int screen_dpi);
+            int viewport_height, int screen_xdpi, int screen_ydpi);
 
         // *** end of edit ***
 

@@ -5,54 +5,85 @@
 //-----------------------------------------------------------------------
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class DPICalculator : MonoBehaviour
 {
     public Image rulerImage;   // ruler image
     public Text dpiText;       // UI text
-    float DPI; 
-    float rulerWidthPixels;     
-    float rulerWidthInches = 0.124f/0.0254f; // 124mm in inches (real world size of ruler image)
-    public static float CalculatedDPI;      // calculated DPI value to be accessed by other scripts
+    float DPI;
+    float rulerWidthPixels;
+    float rulerWidthInches; // set per-scene in RecalculateDPI
+    public static float CalculatedXDPI;      // calculated DPI value to be accessed by other scripts
+    public static float CalculatedYDPI;     // calculated Y-DPI value to be accessed by other scripts
 
     private Canvas canvas;
     //private float scaleFactor;  // canvas scale factor
-    
-    
+
+
     void Awake()
     {
         DontDestroyOnLoad(gameObject);
-        //Canvas canvas = GetComponentInParent<Canvas>();
         canvas = GetComponentInParent<Canvas>();
-        //scaleFactor = canvas.scaleFactor;
 
-        // Load saved ruler width if it exists
-        if (PlayerPrefs.HasKey("RulerWidth"))
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        LoadPrefsForScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        LoadPrefsForScene(scene.buildIndex);
+    }
+
+    private void LoadPrefsForScene(int sceneIndex)
+    {
+        string dpiKey = sceneIndex == 1 ? "SavedYDPI" : "SavedXDPI";
+        string widthKey = sceneIndex == 1 ? "RulerWidthY" : "RulerWidthX";
+
+        if (PlayerPrefs.HasKey(widthKey))
         {
-            float savedWidth = PlayerPrefs.GetFloat("RulerWidth");
+            float savedWidth = PlayerPrefs.GetFloat(widthKey);
             RectTransform rt = rulerImage.rectTransform;
-            rt.sizeDelta = new Vector2(savedWidth, rt.sizeDelta.y);
+            rt.sizeDelta = sceneIndex == 1
+                ? new Vector2(rt.sizeDelta.x, savedWidth)
+                : new Vector2(savedWidth, rt.sizeDelta.y);
         }
 
-        // Load saved DPI if it exists
-        if (PlayerPrefs.HasKey("SavedDPI"))
-        {
-            CalculatedDPI = PlayerPrefs.GetFloat("SavedDPI");
-        }
+        if (PlayerPrefs.HasKey(dpiKey))
+            if (sceneIndex == 1)
+                CalculatedYDPI = PlayerPrefs.GetFloat(dpiKey);
+            else
+                CalculatedXDPI = PlayerPrefs.GetFloat(dpiKey);
 
         UpdateDPIText();
-
     }
 
     public void RecalculateDPI()
     {
-        rulerWidthPixels = rulerImage.rectTransform.sizeDelta.x; 
-        //CalculatedDPI = (rulerWidthPixels * scaleFactor) / rulerWidthInches;
-        CalculatedDPI = (rulerWidthPixels * canvas.scaleFactor) / rulerWidthInches;
-        // Save DPI and ruler width
-        PlayerPrefs.SetFloat("SavedDPI", CalculatedDPI);
-        PlayerPrefs.SetFloat("RulerWidth", rulerWidthPixels);
+        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        rulerWidthInches = sceneIndex == 1 ? 0.062f / 0.0254f : 0.124f / 0.0254f;
+        rulerWidthPixels = sceneIndex == 1
+            ? rulerImage.rectTransform.sizeDelta.y
+            : rulerImage.rectTransform.sizeDelta.x;
+        if (sceneIndex == 1)
+        {
+            CalculatedYDPI = (rulerWidthPixels * canvas.scaleFactor) / rulerWidthInches;
+        }
+        else
+        {
+            CalculatedXDPI = (rulerWidthPixels * canvas.scaleFactor) / rulerWidthInches;
+        }
+
+        string dpiKey = sceneIndex == 1 ? "SavedYDPI" : "SavedXDPI";
+        string widthKey = sceneIndex == 1 ? "RulerWidthY" : "RulerWidthX";
+        PlayerPrefs.SetFloat(dpiKey, sceneIndex == 1 ? CalculatedYDPI : CalculatedXDPI);
+        PlayerPrefs.SetFloat(widthKey, rulerWidthPixels);
         PlayerPrefs.Save();
 
         UpdateDPIText();
@@ -61,6 +92,9 @@ public class DPICalculator : MonoBehaviour
     private void UpdateDPIText()
     {
         if (dpiText != null)
-            dpiText.text = "DPI: " + CalculatedDPI.ToString("F1");
+            if (SceneManager.GetActiveScene().buildIndex == 1)
+                dpiText.text = "Y-DPI: " + CalculatedYDPI.ToString("F1");
+            else
+                dpiText.text = "X-DPI: " + CalculatedXDPI.ToString("F1");
     }
 }

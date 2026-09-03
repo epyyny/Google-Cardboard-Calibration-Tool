@@ -1,5 +1,52 @@
-> [!IMPORTANT]
-> Do not file issues here. Please file issues at the [Cardboard SDK repository](https://github.com/googlevr/cardboard/issues) to report any bugs, ask questions or request specific features.
+# Google Cardboard XR Plugin — DPI Calibration Fork
+
+This is a modified version of the [cardboard-xr-plugin](https://github.com/googlevr/cardboard-xr-plugin).
+
+This version adds DPI calibration to ensure the correct DPI is used during stereoscopic rendering on Android devices.
+
+## What's changed
+
+| File | Status |
+|------|--------|
+| `Runtime/Ruler/` | New — DPI calibration scenes and scripts |
+| `Runtime/XRLoader.cs` | Modified |
+| `Runtime/Android/GfxPluginCardboard.aar` | Modified |
+| All other files | Unaltered (original Google source) |
+
+## Setup
+
+### 1. Base project
+
+Follow the [Quickstart for Google Cardboard for Unity](https://developers.google.com/cardboard/develop/unity/quickstart), with one difference: use this plugin instead of the official `cardboard-xr-plugin`. To install it, clone or download this repo to your PC, then in Unity go to **Package Manager → + → Add package from disk** and select the `package.json` in this folder.
+
+Also apply these additional settings:
+- **Default Orientation** → `Landscape Right`
+- **Graphics API** → `OpenGLES3`
+
+### 2. Add the DPI scaling toggle
+
+Add `DpiScalingToggle.cs` to your VR scene. It can be found at:
+
+> Packages → Google Cardboard XR Plugin for Unity → Runtime → DpiScalingToggle.cs
+
+This script lets you toggle between calibrated and uncalibrated DPI by tapping the screen.
+
+### 3. Add the ruler scenes
+
+In **Build Settings**, add the ruler scenes to your scene list. They can be found at:
+
+> Packages → Google Cardboard XR Plugin for Unity → Runtime → Ruler
+
+The scene order must be:
+
+| Index | Scene |
+|-------|-------|
+| 0 | `Ruler_Scene_xdpi` |
+| 1 | `Ruler_Scene_ydpi` |
+| 2 | Your VR scene (e.g. Hello Cardboard) |
+
+
+
 
 Google Cardboard XR Plugin for Unity
 ====================================

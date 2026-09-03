@@ -1524,6 +1524,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rulerImage: {fileID: 1992843542}
   widthStep: 2
+  heightStep: 0.5
   dpiCalculator: {fileID: 1186424738}
 --- !u!4 &1186424736
 Transform:

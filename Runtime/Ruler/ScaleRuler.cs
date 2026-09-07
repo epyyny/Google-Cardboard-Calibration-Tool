@@ -41,4 +41,24 @@ public class ScaleRuler : MonoBehaviour
             rt.sizeDelta = new Vector2(rt.sizeDelta.x - widthStep, rt.sizeDelta.y);
         dpiCalculator.RecalculateDPI();
     }
+
+    public void IncreaseWidthLarge()
+    {
+        RectTransform rt = rulerImage.rectTransform;
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+            rt.sizeDelta = new Vector2(rt.sizeDelta.x, rt.sizeDelta.y + 10f);
+        else
+            rt.sizeDelta = new Vector2(rt.sizeDelta.x + 10f, rt.sizeDelta.y);
+        dpiCalculator.RecalculateDPI();
+    }
+
+    public void DecreaseWidthLarge()
+    {
+        RectTransform rt = rulerImage.rectTransform;
+        if (SceneManager.GetActiveScene().buildIndex == 1)
+            rt.sizeDelta = new Vector2(rt.sizeDelta.x, rt.sizeDelta.y - 10f);
+        else
+            rt.sizeDelta = new Vector2(rt.sizeDelta.x - 10f, rt.sizeDelta.y);
+        dpiCalculator.RecalculateDPI();
+    }
 }
